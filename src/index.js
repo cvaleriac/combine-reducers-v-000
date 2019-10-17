@@ -5,16 +5,6 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import manageAuthorsAndBooks from './reducers/manageAuthorsAndBooks';
 
-
-const store = createStore(manageAuthorsAndBooks, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
-
-ReactDOM.render(
-  <Provider store={store}>
-    <App store={store}/>
-  </Provider>,
-  document.getElementById('root')
-);
-
 import { combineReducers } from "redux";
 
 const rootReducer = combineReducers({
@@ -49,7 +39,28 @@ function authorsReducer(state = [], action) {
       idx = state.findIndex(author => author.id  === action.id)
       return [...state.slice(0, idx), ...state.slice(idx + 1)];
 
+      case "ADD_BOOK":
+      let existingAuthor = state.filter(
+        author => author.authorName === action.book.authorName
+      );
+      if (existingAuthor.length > 0) {
+        return state;
+      } else {
+        return [...state, { authorName: action.book.authorName, id: uuid() }];
+      }
+
     default:
       return state;
   }
 }
+
+
+const store = createStore(manageAuthorsAndBooks, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App store={store}/>
+  </Provider>,
+  document.getElementById('root')
+);
+
